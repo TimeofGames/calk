@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/6.6.4/math.js"></script>
+
+<style>
+	.btn {
+        width: 58px;
+        height: 40px;
+        display: inline-block;
+        text-align: center;
+        line-height: 40px;
+        user-select: none;
+		border: 1px solid #d5d5d5;
+    }
+    .btn.num {
+		background: #e5e5e5;
+    }
+	.btn.sign {
+		background: #c5c5c5;
+    }
+ 
+    .btn:hover {
+        background: #EEE;
+        color: #000;
+    }
+ 
+    #calc-wrap {
+        padding: 10px;
+        width: 100%;
+        text-align: center;
+        background: #FFF;
+		
+    }
+ 
+    #calc {
+        width: 240px;
+        display: inline-block;
+    }
+ 
+	output {
+		textContent:0;
+		display: flex;
+		justify-content: right;
+		width: 240px;
+		height: 80px;
+		background: #fff;
+		margin: 10px auto;
+		border-radius: 5px;
+		font-size: 1.4em;
+		font-weight: bold;
+		box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.3),
+		inset -1px -1px 1px rgba(0, 0, 0, 0.3);
+	}
+</style>
+
+</head>
+<body>
+<div id="calc-wrap">
+    <div id="calc">
+        <output>0</output>
+    </div>
+</div>
+	
+
+    <script>
+// код начнёт выполняться после загрузки страницы
+// когда окно загрузится, сработает метод window.onLoad
+window.addEventListener('load', function OnWindowLoaded() {
+    // набор кнопок
+    var signs = [
+		'CE','C','D','/',
+        '1', '2', '3', '*',
+        '4', '5', '6', '-',
+        '7', '8', '9', '+',
+        '±', '0', '.', '='
+    ];
+ 
+    var calc = document.getElementById('calc');
+ 
+    const output = document.querySelector('output')
+	
+    signs.forEach(function (sign) {
+        var signElement = document.createElement('div');
+        signElement.innerHTML = sign;
+		var number = ['1', '2', '3','4', '5', '6','7', '8', '9','0'];
+		if (sign in number){
+		signElement.className = 'btn num';
+		}
+		else{signElement.className = 'btn sign';}
+		calc.appendChild(signElement);
+    });
+	
+    document.querySelectorAll('#calc-wrap .btn').forEach(function (button) {
+        button.addEventListener('click', onButtonClick);
+    });
+	
+	document.addEventListener('keydown', event => {
+    if ((event.key).match(/[0-9%\/*\-+\(\)=]|Backspace|Enter/)) ButtonClick(event.key)
+	})
+	function onButtonClick(e){ButtonClick(e.target.innerHTML);}
+	
+    function ButtonClick(button) {
+        if (button === 'C') {
+            output.textContent = '0';
+        } else if (button.match(/=|Enter/)) {
+			try {
+				output.textContent = math.evaluate(output.textContent)
+			} catch {
+				var oldValue = output.textContent
+				var newValue = 'недопустимое выражение'
+				output.textContent = newValue
+				setTimeout(() => {
+					output.textContent = oldValue
+				}, 1500)
+			}
+			
+        } else if (output.textContent === '0') {
+            output.textContent = button;
+		} else if (button.match(/CE|Backspace/)){
+			output.textContent = output.textContent.substring(0, output.textContent.length - 1);
+        } else {
+			var number = ['1', '2', '3','4', '5', '6','7', '8', '9','0'];
+			if (!(button in number)){
+			output.textContent += (button+"\n");
+			}
+			else{output.textContent += button;}            
+        }
+    }
+});
+</script>
+
+</body>
+
+</html>
