@@ -138,13 +138,13 @@ window.addEventListener('load', function OnWindowLoaded() {
 				})
 			}
 			output.textContent=newLine;
-		} else if (button.match(/CE|Backspace/)){
+		} else if (button ==='D'){
 			if (output.textContent[output.textContent.length - 1] === '\n'){
 			output.textContent = output.textContent.substring(0, output.textContent.length - 3);
 			} else {
 			output.textContent = output.textContent.substring(0, output.textContent.length - 1);
 			}
-        } else if (button ==='D'){
+        } else if (button.match(/CE|Backspace/)){
 			let newLine = '';
 			let oldLine = output.textContent.split('');
 			if (output.textContent.includes('\r\n')){
