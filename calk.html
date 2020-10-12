@@ -40,14 +40,12 @@
     }
  
 	output {
-		textContent:0;
 		display: flex;
 		justify-content: right;
+		white-space: pre-line;
 		width: 240px;
 		height: 80px;
-		background: #fff;
-		margin: 10px auto;
-		border-radius: 5px;
+		background: #e5e5e5;
 		font-size: 1.4em;
 		font-weight: bold;
 		box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.3),
@@ -69,7 +67,7 @@
 // когда окно загрузится, сработает метод window.onLoad
 window.addEventListener('load', function OnWindowLoaded() {
     // набор кнопок
-    var signs = [
+    let signs = [
 		'CE','C','D','/',
         '1', '2', '3', '*',
         '4', '5', '6', '-',
@@ -77,14 +75,14 @@ window.addEventListener('load', function OnWindowLoaded() {
         '±', '0', '.', '='
     ];
  
-    var calc = document.getElementById('calc');
+    let calc = document.getElementById('calc');
  
     const output = document.querySelector('output')
 	
     signs.forEach(function (sign) {
-        var signElement = document.createElement('div');
+        let signElement = document.createElement('div');
         signElement.innerHTML = sign;
-		var number = ['1', '2', '3','4', '5', '6','7', '8', '9','0'];
+		let number = ['1', '2', '3','4', '5', '6','7', '8', '9','0'];
 		if (sign in number){
 		signElement.className = 'btn num';
 		}
@@ -97,7 +95,7 @@ window.addEventListener('load', function OnWindowLoaded() {
     });
 	
 	document.addEventListener('keydown', event => {
-    if ((event.key).match(/[0-9%\/*\-+\(\)=]|Backspace|Enter/)) ButtonClick(event.key)
+    if ((event.key).match(/[0-9%\/*\-+.\(\)=]|Backspace|Enter/)) ButtonClick(event.key)
 	})
 	function onButtonClick(e){ButtonClick(e.target.innerHTML);}
 	
@@ -106,10 +104,14 @@ window.addEventListener('load', function OnWindowLoaded() {
             output.textContent = '0';
         } else if (button.match(/=|Enter/)) {
 			try {
-				output.textContent = math.evaluate(output.textContent)
+				let preparString = '';
+				output.textContent.split('').forEach(function(sign){
+				if (sign.match(/[0-9%\/*\-+.\(\)=]/)) preparString+=sign;
+				})
+				output.textContent = math.evaluate(preparString)
 			} catch {
-				var oldValue = output.textContent
-				var newValue = 'недопустимое выражение'
+				let oldValue = output.textContent
+				let newValue = 'недопустимое выражение'
 				output.textContent = newValue
 				setTimeout(() => {
 					output.textContent = oldValue
@@ -117,16 +119,54 @@ window.addEventListener('load', function OnWindowLoaded() {
 			}
 			
         } else if (output.textContent === '0') {
-            output.textContent = button;
-		} else if (button.match(/CE|Backspace/)){
-			output.textContent = output.textContent.substring(0, output.textContent.length - 1);
-        } else {
-			var number = ['1', '2', '3','4', '5', '6','7', '8', '9','0'];
-			if (!(button in number)){
-			output.textContent += (button+"\n");
+			if (button === '.'){output.textContent = ('0'+button);}
+			else if (button === '±') {output.textContent = ('-'); }
+			else{output.textContent = button;}  
+		} else if (button === '±') {
+			let newLine = '';
+			let oldLine = output.textContent.split('');
+			if (output.textContent.includes('\r\n')){
+				oldLine.forEach(function(sign){
+					if (sign==='\n'){newLine+='\n-'}
+					else {newLine+=sign}
+				})			
+			} else {
+				oldLine.forEach(function(sign,index){
+					if (index === 0 && sign != '-' ){newLine += ('-' + sign)}
+					else if(index === 0 && sign == '-' ){newLine += ''}
+					else {newLine+=sign}
+				})
 			}
-			else{output.textContent += button;}            
+			output.textContent=newLine;
+		} else if (button.match(/CE|Backspace/)){
+			if (output.textContent[output.textContent.length - 1] === '\n'){
+			output.textContent = output.textContent.substring(0, output.textContent.length - 3);
+			} else {
+			output.textContent = output.textContent.substring(0, output.textContent.length - 1);
+			}
+        } else if (button ==='D'){
+			let newLine = '';
+			let oldLine = output.textContent.split('');
+			if (output.textContent.includes('\r\n')){
+				let i = 0;
+				while (oldLine[i] != '\n'){
+					newLine += oldLine[i];
+					i++;
+				}
+				newLine += '\n'
+			} else {
+				newLine = '';
+				}
+			output.textContent=newLine;
+		} else {
+			let numbers = ['1', '2', '3','4', '5', '6','7', '8', '9', '0', '.'];
+			if (!(numbers.includes(button))){
+				output.textContent += (button+"\r\n");
+			} else {
+				output.textContent += button;
+			}
         }
+		if (output.textContent === '') {output.textContent = '0'}
     }
 });
 </script>
