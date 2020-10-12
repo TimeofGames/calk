@@ -116,20 +116,19 @@ window.addEventListener('load', function OnWindowLoaded() {
 				setTimeout(() => {
 					output.textContent = oldValue
 				}, 1500)
-			}
-			
-        } else if (output.textContent === '0') {
-			if (button === '.'){output.textContent = ('0'+button);}
-			else if (button === '±') {output.textContent = ('-'); }
-			else{output.textContent = button;}  
+			} 
 		} else if (button === '±') {
 			let newLine = '';
 			let oldLine = output.textContent.split('');
 			if (output.textContent.includes('\r\n')){
-				oldLine.forEach(function(sign){
-					if (sign==='\n'){newLine+='\n-'}
-					else {newLine+=sign}
-				})			
+				for (let i = 0; i < output.textContent.length; i++){
+					if (output.textContent[i]==='\n' && output.textContent[i+1]==='-'){
+						newLine+='\n';
+						i++;
+					}else if(output.textContent[i]==='\n'){
+						newLine+='\n-'
+					} else {newLine+=output.textContent[i]}
+					}		
 			} else {
 				oldLine.forEach(function(sign,index){
 					if (index === 0 && sign != '-' ){newLine += ('-' + sign)}
@@ -158,6 +157,10 @@ window.addEventListener('load', function OnWindowLoaded() {
 				newLine = '';
 				}
 			output.textContent=newLine;
+		} else if (output.textContent === '0') {
+			if (button === '.'){output.textContent = ('0'+button);}
+			else if (button === '±') {output.textContent = ('-'); }
+			else{output.textContent = button;} 
 		} else {
 			let numbers = ['1', '2', '3','4', '5', '6','7', '8', '9', '0', '.'];
 			if (!(numbers.includes(button))){
